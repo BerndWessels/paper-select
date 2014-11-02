@@ -1,0 +1,344 @@
+<!--
+Element providing solution to no problem in particular.
+
+##### Example
+
+    <paper-select>
+        <template repeat="{{item in selected}}">
+            <span start selected>{{item}}</span>
+        </template>
+        <template repeat="{{item in options}}">
+            <span options>{{item}}</span>
+        </template>
+    </paper-select>
+
+@element paper-select
+@blurb Element providing solution to no problem in particular.
+@status alpha
+@homepage http://polymerlabs.github.io/paper-select
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-dropdown/core-dropdown.html">
+<link rel="import" href="../core-style/core-style.html">
+<link rel="import" href="../paper-shadow/paper-shadow.html">
+<link rel="import" href="../paper-input-with-content/paper-input-with-content.html">
+
+<core-style id="paper-select">
+    core-dropdown {
+        background-color: {{g.paperSelect.dropdownBackgroundColor}};
+    }
+</core-style>
+
+<polymer-element name="paper-select">
+
+    <template>
+        <core-style ref="paper-select"></core-style>
+
+        <link rel="stylesheet" href="paper-select.css"/>
+        <core-style ref="paper-select"></core-style>
+
+        <paper-input-with-content id="select"
+                                  placeholder="{{placeholder}}"
+                                  readonly="{{readonly}}"
+                                  autofocus="{{autofocus}}"
+                                  multiline="{{multiline}}"
+                                  rows="{{rows}}"
+                                  inputValue="{{inputValue}}"
+                                  value="{{value}}"
+                                  type="{{type}}"
+                                  required="{{required}}"
+                                  pattern="{{pattern}}"
+                                  min="{{min}}"
+                                  max="{{max}}"
+                                  step="{{step}}"
+                                  maxlength="{{maxlength}}"
+                                  invalid="{{invalid}}"
+                                  validateImmediately="{{validateImmediately}}"
+                                  label="{{label}}"
+                                  floatingLabel="{{floatingLabel}}"
+                                  maxRows="{{maxRows}}"
+                                  error="{{error}}"
+                                  focused="{{focused}}"
+                                  contentParent="{{}}">
+            <span start></span><!-- stupid workaround for IE. -->
+            <content select="[selected]"></content>
+        </paper-input-with-content>
+
+        <core-dropdown id="dropdown" relatedTarget="{{$.select}}" autoFocusDisabled="true" layout vertical>
+            <span id="current"></span>
+            <content select="[options]"></content>
+            <paper-shadow></paper-shadow>
+        </core-dropdown>
+
+    </template>
+
+    <script>
+        (function () {
+
+            var paperSelect = CoreStyle.g.paperSelect = CoreStyle.g.paperSelect || {};
+            paperSelect.dropdownBackgroundColor = '#ffffff';
+
+            Polymer({
+                publish: {
+                    /** **** Core Input **** **/
+
+                    /**
+                     * Placeholder text that hints to the user what can be entered in
+                     * the input.
+                     *
+                     * @attribute placeholder
+                     * @type string
+                     * @default ''
+                     */
+                    placeholder: '',
+
+                    /**
+                     * If true, this input cannot be focused and the user cannot change
+                     * its value.
+                     *
+                     * @attribute disabled
+                     * @type boolean
+                     * @default false
+                     */
+                    disabled: false,
+
+                    /**
+                     * If true, the user cannot modify the value of the input.
+                     *
+                     * @attribute readonly
+                     * @type boolean
+                     * @default false
+                     */
+                    readonly: false,
+
+                    /**
+                     * If true, this input will automatically gain focus on page load.
+                     *
+                     * @attribute autofocus
+                     * @type boolean
+                     * @default false
+                     */
+                    autofocus: false,
+
+                    /**
+                     * If true, this input accepts multi-line input like a `<textarea>`
+                     *
+                     * @attribute multiline
+                     * @type boolean
+                     * @default false
+                     */
+                    multiline: false,
+
+                    /**
+                     * (multiline only) The height of this text input in rows. The input
+                     * will scroll internally if more input is entered beyond the size
+                     * of the component. This property is meaningless if multiline is
+                     * false. You can also set this property to "fit" and size the
+                     * component with CSS to make the input fit the CSS size.
+                     *
+                     * @attribute rows
+                     * @type number|'fit'
+                     * @default 'fit'
+                     */
+                    rows: 'fit',
+
+                    /**
+                     * The current value of this input. Changing inputValue programmatically
+                     * will cause value to be out of sync. Instead, change value directly
+                     * or call commit() after changing inputValue.
+                     *
+                     * @attribute inputValue
+                     * @type string
+                     * @default ''
+                     */
+                    inputValue: '',
+
+                    /**
+                     * The value of the input committed by the user, either by changing the
+                     * inputValue and blurring the input, or by hitting the `enter` key.
+                     *
+                     * @attribute value
+                     * @type string
+                     * @default ''
+                     */
+                    value: '',
+
+                    /**
+                     * Set the input type. Not supported for `multiline`.
+                     *
+                     * @attribute type
+                     * @type string
+                     * @default text
+                     */
+                    type: 'text',
+
+                    /**
+                     * If true, the input is invalid if its value is null.
+                     *
+                     * @attribute required
+                     * @type boolean
+                     * @default false
+                     */
+                    required: false,
+
+                    /**
+                     * A regular expression to validate the input value against. See
+                     * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Validation-related_attributes
+                     * for more info. Not supported if `multiline` is true.
+                     *
+                     * @attribute pattern
+                     * @type string
+                     * @default '.*'
+                     */
+                    // FIXME(yvonne): The default is set to .* because we can't bind to pattern such
+                    // that the attribute is unset if pattern is null.
+                    pattern: '.*',
+
+                    /**
+                     * If set, the input is invalid if the value is less than this property. See
+                     * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Validation-related_attributes
+                     * for more info. Not supported if `multiline` is true.
+                     *
+                     * @attribute min
+                     */
+                    min: null,
+
+                    /**
+                     * If set, the input is invalid if the value is greater than this property. See
+                     * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Validation-related_attributes
+                     * for more info. Not supported if `multiline` is true.
+                     *
+                     * @attribute max
+                     */
+                    max: null,
+
+                    /**
+                     * If set, the input is invalid if the value is not `min` plus an integral multiple
+                     * of this property. See
+                     * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Validation-related_attributes
+                     * for more info. Not supported if `multiline` is true.
+                     *
+                     * @attribute step
+                     */
+                    step: null,
+
+                    /**
+                     * The maximum length of the input value.
+                     *
+                     * @attribute maxlength
+                     * @type number
+                     */
+                    maxlength: null,
+
+                    /**
+                     * If this property is true, the text input's inputValue failed validation.
+                     *
+                     * @attribute invalid
+                     * @type boolean
+                     * @default false
+                     */
+                    invalid: false,
+
+                    /**
+                     * If this property is true, validate the input as they are entered.
+                     *
+                     * @attribute validateImmediately
+                     * @type boolean
+                     * @default true
+                     */
+                    validateImmediately: true,
+
+                    /** **** Paper Input **** **/
+
+                    /**
+                     * The label for this input. It normally appears as grey text inside
+                     * the text input and disappears once the user enters text.
+                     *
+                     * @attribute label
+                     * @type string
+                     * @default ''
+                     */
+                    label: '',
+
+                    /**
+                     * If true, the label will "float" above the text input once the
+                     * user enters text instead of disappearing.
+                     *
+                     * @attribute floatingLabel
+                     * @type boolean
+                     * @default false
+                     */
+                    floatingLabel: false,
+
+                    /**
+                     * (multiline only) If set to a non-zero value, the height of this
+                     * text input will grow with the value changes until it is maxRows
+                     * rows tall. If the maximum size does not fit the value, the text
+                     * input will scroll internally.
+                     *
+                     * @attribute maxRows
+                     * @type number
+                     * @default 0
+                     */
+                    maxRows: 0,
+
+                    /**
+                     * The message to display if the input value fails validation. If this
+                     * is unset or the empty string, a default message is displayed depending
+                     * on the type of validation error.
+                     *
+                     * @attribute error
+                     * @type string
+                     */
+                    error: '',
+
+                    /**
+                     * The focused attribute can be used for styling the element.
+                     */
+                    focused: {value: false, reflect: true}
+                },
+                ready: function () {
+                    this.$.select.$.input.addEventListener('keydown', this.keydownAction.bind(this));
+                },
+                get hasOptions() {
+                    // True if there are any elements with an 'options' attribute on it.
+                    return this.querySelectorAll('[options]').length > 0;
+                },
+                inputValueChanged: function (oldValue, newValue) {
+                    // Update everything else before we update the dropdown.
+                    this.async(function () {
+                        // Align the width of the dropdown with the input.
+                        this.$.current.style.minWidth = (this.$.select.clientWidth - 8) + 'px';
+                        // Position the dropdown just below the input.
+                        this.$.dropdown.style.top = this.$.select.clientHeight + 'px';
+                        // Reset the dropdown height to match the actual content height.
+                        this.$.dropdown.style.height = null;
+                        // Open or close the dropdown depending on the input value.
+                        this.$.dropdown.opened = newValue.length > 0 && this.hasOptions;
+                    }, null, 0);
+                },
+                keydownAction: function (e) {
+                    // Up key pressed.
+                    if (e.keyCode == 38) {
+                        this.fire('cursor-up');
+                    }
+                    // Down key pressed.
+                    else if (e.keyCode == 40) {
+                        this.fire('cursor-down');
+                    }
+                    // Enter key pressed.
+                    else if (e.keyCode == 13) {
+                        this.fire('enter-key');
+                    }
+                    // Escape key pressed.
+                    else if (e.keyIdentifier == 'U+001B' || e.keyCode == 27) {
+                        this.fire('escape-key');
+                    }
+                }
+            });
+
+        }());
+    </script>
+
+</polymer-element>

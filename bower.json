@@ -1,0 +1,27 @@
+{
+    "name": "paper-select",
+    "version": "1.0.0",
+    "authors": [
+        "Bernd Wessels"
+    ],
+    "description": "A paper input with content and a dropdown to enable flexible paper select functionality.",
+    "keywords": [
+        "paper",
+        "select",
+        "polymer",
+        "web-components"
+    ],
+    "homepage": "https://github.com/berndwessels/paper-select",
+    "main": "paper-select.html",
+    "dependencies": {
+        "polymer": "Polymer/polymer#master",
+        "platform": "Polymer/platform#master",
+        "core-icon": "Polymer/core-dropdown#master",
+        "core-icon-button": "Polymer/core-style#master",
+        "core-icons": "Polymer/paper-shadow#master",
+        "core-overlay": "Polymer/paper-input-with-content#master"
+    },
+    "devDependencies": {
+        "polymer-test-tools": "Polymer/polymer-test-tools#master"
+    }
+}

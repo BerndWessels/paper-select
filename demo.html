@@ -1,0 +1,204 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>paper-select Demo</title>
+
+    <link rel="stylesheet" type="text/css" href="../polymer-themes/denim/theme.css">
+
+    <script src="../webcomponentsjs/webcomponents.js"></script>
+
+    <link rel="import" href="../polymer/polymer.html">
+    <link rel="import" href="../core-dropdown/core-dropdown.html">
+    <link rel="import" href="../core-icon-button/core-icon-button.html">
+    <link rel="import" href="paper-select.html">
+
+</head>
+
+<body unresolved>
+
+<polymer-element name="demo-app">
+    <template>
+        <style>
+            :host {
+            }
+
+            span[start][selected] {
+                margin-right: 4px;
+            }
+
+            span[start][selected]:focus {
+                background-color: #666666;
+            }
+
+            span[options][focused] {
+                background-color: #666666;
+            }
+
+            paper-select::shadow > paper-input-with-content::shadow #inputFlex {
+                min-width: 200px;
+            }
+        </style>
+        <p>An `paper-select` looks like this:</p>
+
+        <paper-select id="select"
+                      inputValue="{{filter}}"
+                      floatingLabel="true"
+                      label="Floating Label"
+                      pattern=".*b.*"
+                      error="b please"
+                      on-click="{{click}}"
+                      on-cursor-up="{{cursorUpAction}}"
+                      on-cursor-down="{{cursorDownAction}}"
+                      on-enter-key="{{enterKeyAction}}"
+                      on-escape-key="{{escapeAction}}">
+            <template repeat="{{item, index in selected}}">
+                <span start selected index="{{index}}" tabindex="0" on-keydown="{{keydown}}">{{item.text}}</span>
+            </template>
+            <template repeat="{{item in options}}">
+                <span options focused?="{{item.focused}}">{{item.text}}</span>
+            </template>
+        </paper-select>
+
+        <p>This all ends here right now.</p>
+
+    </template>
+    <script>
+        Polymer({
+            created: function () {
+                // Initialize the selected options array.
+                this.selected = [];
+                // Initialize the options array.
+                this.options = [];
+            },
+            ready: function () {
+                // Listen to the keydown event.
+                this.$.select.$.select.$.input.addEventListener('keydown', function (e) {
+                    // Prevent the cursor from jumping on cursor up/down.
+                    if (e.keyCode == 38 || e.keyCode == 40) {
+                        e.preventDefault();
+                    }
+                });
+            },
+            // The input value has changed. Filter the options.
+            filterChanged: function (oldValue, newValue) {
+                // Usually coming from an ajax call. /api/multiselect get artists?filter=
+                var ajaxResponse = [
+                    {id: 'Afghanistan', text: 'Afghanistan'},
+                    {id: 'Albanie', text: 'Albanie'},
+                    {id: 'Bahamas', text: 'Bahamas'},
+                    {id: 'Bolivie', text: 'Bolivie'},
+                    {id: 'Canada', text: 'Canada'},
+                    {id: 'Cameroun', text: 'Cameroun'}
+                ];
+                // Usually already filtered by the query.
+                this.options = ajaxResponse.filter(function (item) {
+                    return item.text.toLowerCase().trim().indexOf(newValue.toLowerCase().trim()) !== -1;
+                }, this);
+            },
+            // Find the focused option.
+            get focusedOption() {
+                return this.options.find(function (option, index) {
+                    return option.focused;
+                }, this);
+            },
+            // Find the index of the focused option.
+            get focusedOptionIndex() {
+                return this.options.findIndex(function (option, index) {
+                    if (option.focused)
+                        return true;
+                }, this);
+            },
+            // Focus the previous option.
+            cursorUpAction: function (e) {
+                var index = this.focusedOptionIndex;
+                if (index > 0) {
+                    delete this.options[index].focused;
+                    this.options[index - 1].focused = true;
+                }
+            },
+            // Focus the next option.
+            cursorDownAction: function (e) {
+                var index = this.focusedOptionIndex;
+                if (index < this.options.length - 1) {
+                    if (index > -1) {
+                        delete this.options[index].focused;
+                    }
+                    this.options[index + 1].focused = true;
+                }
+            },
+            // Select the focused option.
+            enterKeyAction: function (e) {
+                var option = this.focusedOption;
+                if (option) {
+                    this.selected.push(option);
+                    this.filter = '';
+                }
+            },
+            //
+            escapeKeyAction: function (e) {
+            },
+            // Delete pressed on a selected option.
+            keydown: function (e) {
+                // Delete key pressed.
+                if (e.keyIdentifier == 'U+007f' || e.keyCode == 46) {
+                    // Get the index of the selected option.
+                    var index = e.target.attributes['index'].value;
+                    // Remove the option from the selected options.
+                    this.selected.splice(index, 1);
+                }
+            }
+        });
+    </script>
+</polymer-element>
+
+<demo-app></demo-app>
+
+<script>
+    if (!Array.prototype.findIndex) {
+        Array.prototype.findIndex = function (predicate) {
+            if (this == null) {
+                throw new TypeError('Array.prototype.find called on null or undefined');
+            }
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            var list = Object(this);
+            var length = list.length >>> 0;
+            var thisArg = arguments[1];
+            var value;
+
+            for (var i = 0; i < length; i++) {
+                value = list[i];
+                if (predicate.call(thisArg, value, i, list)) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+    }
+    if (!Array.prototype.find) {
+        Array.prototype.find = function (predicate) {
+            if (this == null) {
+                throw new TypeError('Array.prototype.find called on null or undefined');
+            }
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            var list = Object(this);
+            var length = list.length >>> 0;
+            var thisArg = arguments[1];
+            var value;
+
+            for (var i = 0; i < length; i++) {
+                value = list[i];
+                if (predicate.call(thisArg, value, i, list)) {
+                    return value;
+                }
+            }
+            return undefined;
+        };
+    }
+</script>
+</body>
+</html>

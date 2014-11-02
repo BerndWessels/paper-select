@@ -1,0 +1,9 @@
+:host {
+    display: inline-block;
+    position: relative;
+}
+
+#dropdown {
+    position: absolute;
+    padding: 4px;
+}
