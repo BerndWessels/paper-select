@@ -16,10 +16,11 @@
     "dependencies": {
         "polymer": "Polymer/polymer#master",
         "platform": "Polymer/platform#master",
-        "core-icon": "Polymer/core-dropdown#master",
-        "core-icon-button": "Polymer/core-style#master",
-        "core-icons": "Polymer/paper-shadow#master",
-        "core-overlay": "Polymer/paper-input-with-content#master"
+        "core-dropdown": "Polymer/core-dropdown#master",
+        "core-style": "Polymer/core-style#master",
+        "paper-shadow": "Polymer/paper-shadow#master",
+        "core-overlay": "Polymer/core-overlay#master",
+        "paper-input-with-content": "BerndWessels/paper-input-with-content#master"
     },
     "devDependencies": {
         "polymer-test-tools": "Polymer/polymer-test-tools#master"
