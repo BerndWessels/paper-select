@@ -15,6 +15,7 @@
     "main": "paper-select.html",
     "dependencies": {
         "polymer": "Polymer/polymer#master",
+        "webcomponentsjs": "Polymer/webcomponentsjs#master",
         "platform": "Polymer/platform#master",
         "core-dropdown": "Polymer/core-dropdown#master",
         "core-style": "Polymer/core-style#master",
